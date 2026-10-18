@@ -1,0 +1,403 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Plan {
+  id            String         @id @default(cuid())
+  name          String         @unique
+
+  features      PlanFeature[]
+  organizations Organization[]
+}
+
+model PlanFeature {
+  id         String @id @default(cuid())
+  featureKey String
+  planId String
+  plan   Plan @relation(fields: [planId], references: [id])
+
+  @@unique([planId, featureKey])
+}
+
+model Organization {
+  id           String  @id @default(cuid())
+  name         String
+  logoUrl      String?
+  bannerUrl    String?
+  brandNameAr  String?
+  brandNameEn  String?
+  facebook     String?
+  instagram    String?
+  tiktok       String?
+  ratingCount  Int     @default(0)
+  rating       Decimal? @db.Decimal(2, 1)
+  notesAr      String?
+  notesEn      String?
+
+  deletedAt    DateTime?
+
+  planId       String
+  plan   Plan   @relation(fields: [planId],references: [id],onDelete: Restrict)
+
+  settings OrganizationSettings?
+  roles    Role[]
+  users    User[]
+  branches Branch[]
+  products Product[]
+  discounts Discount[]
+
+}
+
+
+
+model OrganizationSettings {
+  id               String  @id @default(cuid())
+  showCategory     Boolean @default(true)
+  showSubCategory  Boolean @default(true)
+  showRating       Boolean @default(true)
+  showOpeningHours Boolean @default(true)
+
+  organizationId String @unique
+
+  organization Organization @relation(fields: [organizationId],references: [id],onDelete: Cascade)
+}
+
+
+
+
+model User {
+  id                       String   @id @default(cuid())
+  phone                    String   @unique
+  email                    String   @unique
+  isActive                 Boolean  @default(true)
+  passwordHash             String
+  forgetPasswordToken      String?  @unique
+  forgetPasswordTokenCreatedAt DateTime?
+
+  organizationId String
+  roleId         String
+
+  organization Organization @relation(fields: [organizationId],references: [id])
+  role Role @relation(fields: [roleId, organizationId],references: [id, organizationId])
+}
+
+enum RoleType {
+  OWNER
+  CUSTOM
+}
+
+model Role {
+  id             String   @id @default(cuid())
+  name           String
+  type           RoleType @default(CUSTOM)
+  organizationId String
+
+  organization Organization @relation(fields: [organizationId],references: [id],onDelete: Cascade)
+
+  users       User[]
+  permissions RolePermission[]
+
+  @@unique([organizationId, name])
+  @@unique([id, organizationId])
+}
+
+model Permission {
+  id   String @id @default(cuid())
+  key  String @unique
+
+  roles RolePermission[]
+}
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role Role @relation(fields: [roleId],references: [id],onDelete: Cascade)
+
+  permission Permission @relation(fields: [permissionId],references: [id],onDelete: Cascade)
+  @@id([roleId, permissionId])
+}
+
+
+
+model Governorate {
+  id        String     @id @default(cuid())
+  nameAr    String
+  nameEn    String
+  cities City[]
+}
+
+model City {
+  id             String @id @default(cuid())
+  nameAr         String
+  nameEn         String
+  governorateId  String
+
+  governorate Governorate @relation(fields: [governorateId],references: [id],onDelete: Restrict)
+
+  districts District[]
+
+  @@unique([governorateId, nameEn])
+}
+
+model District {
+  id     String @id @default(cuid())
+  nameAr String
+  nameEn String
+  cityId String
+
+  city City @relation(fields: [cityId],references: [id],onDelete: Restrict)
+
+  branches Branch[]
+
+  @@unique([cityId, nameEn])
+}
+model Branch{
+  id                String      @id @default(cuid())
+  name              String     
+  address           String
+  googleMapUrl      String?
+  phoneNumber       String?
+  whatsappNumber    String?
+  numberOfTables    Int
+  isActive          Boolean   @default(true)
+
+  deletedAt         DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  organizationId     String
+  districtId         String
+  categories         Category[]
+  products           BranchProduct[]
+
+  organization Organization @relation(fields: [organizationId],references: [id])
+  district  District @relation(fields: [districtId],references: [id],onDelete: Restrict)
+  openingHours OpeningHour[]
+  
+
+  @@unique([organizationId, name])
+
+
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model OpeningHour{
+  id          String    @id @default(cuid())
+  branchId    String
+  dayOfWeek   DayOfWeek
+  isClosed    Boolean   @default(false)
+
+  periods OpeningPeriod[]
+
+  branch      Branch @relation(fields: [branchId],references: [id],onDelete:Cascade)
+
+  @@unique([branchId, dayOfWeek])
+
+}
+
+model OpeningPeriod {
+  id            String @id @default(cuid())
+  openingHourId String
+  openTime      String
+  closeTime     String
+
+  openingHour OpeningHour @relation(fields: [openingHourId],references: [id],onDelete: Cascade)
+}
+
+
+model Category {
+  id       String @id @default(cuid())
+  nameAr   String
+  nameEn   String
+  imageUrl String?
+
+  isActive Boolean  @default(true)
+ sortOrder Int @default(0)
+
+  branchId String
+  branch   Branch @relation(fields: [branchId],references: [id],onDelete: Restrict)
+
+
+  parentId String?
+  products   BranchProduct[]
+
+  parent Category? @relation("CategoryHierarchy",fields: [parentId],references: [id],onDelete: Restrict,  onUpdate: NoAction)
+
+  subcategories Category[] @relation("CategoryHierarchy")
+
+  deletedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([id, branchId])
+  @@index([branchId])
+  @@index([parentId])
+}
+
+enum CookingDegree {
+  RARE
+  MEDIUM_RARE
+  MEDIUM
+  MEDIUM_WELL
+  WELL_DONE
+}
+enum ProductBadge {
+  NEW
+  CHEF_CHOICE
+  BEST_SELLER
+}
+model Product{
+  id            String      @id @default(cuid())
+  nameAr        String
+  nameEn        String
+  descriptionAr String?
+  descriptionEn String?
+  price         Decimal     @db.Decimal(10, 2)
+  isActive      Boolean     @default(true)
+  availableCookingDegrees CookingDegree[] @default([])
+  badge         ProductBadge
+  imageUrl      String?
+  sortOrder Int @default(0)
+
+  deletedAt     DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  organizationId String
+  organization Organization @relation(fields: [organizationId],references: [id],onDelete: Restrict)
+
+  branchProducts  BranchProduct[]
+  allergies      ProductAllergy[]
+  ProductOptions ProductOptionGroup []
+  discounts      ProductDiscount[]
+  @@index([organizationId])
+
+}
+
+model BranchProduct{
+  id          String      @id @default(cuid())
+  branchId    String
+  productId   String
+  categoryId  String
+  isAvailable Boolean     @default(true)
+
+  branch  Branch @relation(fields: [branchId],references: [id],onDelete: Restrict)
+  product Product @relation(fields: [productId],references: [id],onDelete: Restrict)
+  category Category @relation(fields: [categoryId,branchId],references: [id,branchId],onDelete: Restrict)
+
+  promotion Promotion?
+
+  @@unique([branchId, productId])
+  @@index([categoryId, branchId])
+  @@index([productId])
+}
+model Allergy{
+  id        String        @id @default(cuid())
+  nameAr    String
+  nameEn    String
+  iconUrl   String?
+  product  ProductAllergy[]
+}
+
+model ProductAllergy {
+  id        String @id @default(cuid())
+  productId String
+  allergyId String
+
+  product Product @relation(fields: [productId],references: [id],onDelete: Restrict)
+
+  allergy Allergy @relation(fields: [allergyId],references: [id],onDelete: Restrict)
+
+  @@unique([productId, allergyId])
+}
+
+model ProductOptionGroup {
+  id        String @id @default(cuid())
+  nameAr    String
+  nameEn   String
+  isRequired Boolean  @default(false)
+  maxSelections Int @default(1)
+
+  productId String
+  product Product @relation(fields: [productId],references: [id],onDelete: Restrict)
+
+  options  ProductOption[]
+
+    @@index([productId])
+
+}
+
+model ProductOption{
+  id                   String @id @default(cuid())
+  nameAr               String
+  nameEn               String
+  priceAdjustment      Decimal     @db.Decimal(10, 2)
+
+  optionGroupId        String
+  optionGroup    ProductOptionGroup  @relation(fields: [optionGroupId ],references: [id])
+
+    @@index([optionGroupId])
+
+}
+
+// ====================== Discount ====================
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+model Discount {
+  id             String       @id @default(cuid())
+  nameAr         String
+  nameEn         String
+  type           DiscountType
+  value          Decimal      @db.Decimal(10, 2)
+  startsAt       DateTime?
+  endsAt         DateTime?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organizationId String
+  organization Organization @relation(fields: [organizationId],references: [id],onDelete: Restrict)
+  products ProductDiscount[]
+}
+
+model ProductDiscount {
+  productId      String
+  discountId     String
+
+  product Product @relation(fields: [productId],references: [id],onDelete: Cascade)
+  discount Discount @relation(fields: [discountId],references: [id],onDelete: Cascade)
+  
+  @@id([productId, discountId])
+
+}
+
+// ====================== promotions ====================
+model Promotion{
+  id             String       @id @default(cuid())
+  imageUrl       String
+  startsAt       DateTime
+  endsAt         DateTime
+  name           String
+
+  branchProductId   String @unique
+  branchProduct   BranchProduct @relation(fields: [branchProductId],references: [id],onDelete: Restrict)
+
+}
