@@ -391,13 +391,14 @@ model ProductDiscount {
 
 // ====================== promotions ====================
 model Promotion{
-  id             String       @id @default(cuid())
-  imageUrl       String
-  startsAt       DateTime
-  endsAt         DateTime
-  name           String
+  id                String            @id @default(cuid())
+  imageUrl          String
+  startsAt          DateTime
+  endsAt            DateTime
+  name              String
+  isActive          Boolean           @default(false)
 
-  branchProductId   String @unique
-  branchProduct   BranchProduct @relation(fields: [branchProductId],references: [id],onDelete: Restrict)
+  branchProductId   String            @unique
+  branchProduct     BranchProduct     @relation(fields: [branchProductId],references: [id],onDelete: Restrict)
 
 }

@@ -6,6 +6,7 @@ export default function MenuLayout({
   return (
     <div>
       <h1>layout</h1>
+      {children}
     </div>
   );
 }

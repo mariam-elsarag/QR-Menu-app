@@ -1,0 +1,25 @@
+{
+  "menu": "منيو",
+
+  "navigation": {
+    "overview": "الرئيسية",
+    "products": "المنتجات",
+    "categories": "التصنيفات",
+    "branches": "الفروع",
+    "promotions": "العروض الترويجية",
+    "orders": "الطلبات",
+    "reports": "التقارير",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج",
+    "logoutError": "تعذر تسجيل الخروج. حاول مرة أخرى."
+  },
+  "deleteTitle": "هل تريد حذف العنصر؟",
+  "deleteDescription": "هل أنت متأكد من حذف {itemName}؟ لا يمكن التراجع عن هذا الإجراء.",
+  "deleteDescriptionWithoutName": "هل أنت متأكد من حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.",
+  "cancel": "إلغاء",
+  "delete": "حذف",
+  "deleting": "جارٍ الحذف...",
+  "LanguageSwitcher": {
+    "switchLanguage": "تغيير اللغة"
+  }
+}
