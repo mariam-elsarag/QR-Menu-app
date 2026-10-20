@@ -4,6 +4,7 @@ import TableWrapper, {
   TableColumn,
 } from "@/components/share/table/table-wrapper";
 import ConfirmationModal from "@/components/share/model/confirmation-modal";
+import ProductForm from "./product-form";
 
 const response = {
   data: [
@@ -41,7 +42,7 @@ const ProductsList = () => {
           console.log("Delete product:", product.id);
         }}
       />
-      <ConfirmationModal
+      {/* <ConfirmationModal
         open={true}
         onOpenChange={(open) => {
           console.log("kkk");
@@ -50,7 +51,9 @@ const ProductsList = () => {
           console.log("kkk");
         }}
         itemName="test"
-      />
+      /> */}
+
+      <ProductForm />
     </div>
   );
 };

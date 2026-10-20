@@ -21,5 +21,24 @@
   "delete": "Delete",
   "LanguageSwitcher": {
     "switchLanguage": "Switch language"
+  },
+  "products": {
+    "title": "Products",
+    "create": "Create product",
+    "edit": "Edit product",
+    "name": "Product name",
+    "price": "Price",
+    "description": "Description",
+    "category": "Category",
+    "status": "Status",
+    "isAvailable": "Available",
+    "save": "Save product",
+    "cancel": "Cancel",
+    "selectCategory": "Select a category",
+    "validation": {
+      "nameRequired": "Product name is required",
+      "priceRequired": "Price is required",
+      "categoryRequired": "Please select a category"
+    }
   }
 }
