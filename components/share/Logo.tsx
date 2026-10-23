@@ -3,15 +3,17 @@
 import { UtensilsCrossed } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
-
-const Logo = () => {
+type LogoProps = {
+  to?: string;
+};
+const Logo = ({ to = "/" }: LogoProps) => {
   const t = useTranslations();
   const locale = useLocale();
   const isArabic = locale === "ar";
 
   return (
     <Link
-      href="/"
+      href={to}
       aria-label={t("menu")}
       className="group inline-flex items-center gap-2.5"
     >

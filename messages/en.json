@@ -8,7 +8,7 @@
     "orders": "Orders",
     "reports": "Reports",
     "settings": "Settings",
-    "logout": "logout"
+    "logout": "Logout"
   },
   "deleteTitle": "Delete item?",
   "deleteDescription": "Are you sure you want to delete {itemName}? This action cannot be undone.",
@@ -72,10 +72,47 @@
         "validation": "Please enter a valid email address.",
         "server": "We couldn't process your request right now. Please try again later."
       }
+    },
+    "resetPassword": {
+      "title": "Reset your password",
+      "description": "Create a new password for your account.",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "passwordPlaceholder": "Enter your new password",
+      "submit": "Reset password",
+      "submitting": "Resetting password...",
+      "success": "Your password has been reset successfully.",
+      "validation": {
+        "passwordRequired": "Password is required",
+        "passwordMin": "Password must be at least 8 characters",
+        "passwordUppercase": "Password must contain at least one uppercase letter",
+        "passwordLowercase": "Password must contain at least one lowercase letter",
+        "passwordNumber": "Password must contain at least one number",
+        "passwordSpecialCharacter": "Password must contain at least one special character",
+        "confirmPasswordRequired": "Please confirm your password",
+        "passwordsDoNotMatch": "Passwords do not match"
+      }
+    },
+    "changePassword": {
+      "title": "Change your password",
+      "description": "Enter your current password and choose a new one.",
+      "currentPassword": "Current password",
+      "submit": "Change password",
+      "submitting": "Changing password...",
+      "success": "Your password has been changed successfully."
+    },
+    "errors": {
+      "validationError": "Please check your input and try again.",
+      "invalidResetToken": "This password reset link is invalid, expired, or has already been used. Please request a new one.",
+      "invalidPassword": "Your current password is incorrect.",
+      "unauthorized": "Your session has expired. Please sign in again.",
+      "serverError": "Something went wrong. Please try again later."
     }
   },
   "errors": {
     "validation": "Please check your input and try again.",
+    "passwordResetConfigurationMissing": "Password reset configuration is missing.",
+    "passwordChangeConfigurationMissing": "Session configuration is missing.",
     "server": "Something went wrong. Please try again."
   },
   "invalidCredentials": "Invalid email or password"

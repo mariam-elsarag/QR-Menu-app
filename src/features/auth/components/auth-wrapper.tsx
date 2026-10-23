@@ -1,21 +1,9 @@
-import { useTranslations } from "next-intl";
-import React, { ReactNode } from "react";
-import {
-  ArrowRight,
-  Check,
-  Eye,
-  EyeOff,
-  Globe2,
-  LockKeyhole,
-  Mail,
-  QrCode,
-  ShieldCheck,
-  Smartphone,
-  UtensilsCrossed,
-  Zap,
-} from "lucide-react";
-import Logo from "@/components/share/Logo";
+"use client";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import Logo from "@/components/share/Logo";
+import { Check, QrCode, Smartphone, UtensilsCrossed } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { ReactNode } from "react";
 
 type AuthWrapperProps = {
   children: ReactNode;
@@ -23,12 +11,13 @@ type AuthWrapperProps = {
 
 const AuthWrapper = ({ children }: AuthWrapperProps) => {
   const t = useTranslations("auth.login");
+  const locale = useLocale();
 
   return (
     <main className="grid  lg:grid-cols-2 mx-auto max-w-[1536px]">
       <section className="flex  flex-col gap-10 flex-1  bg-background px-6 py-8 sm:px-12 lg:px-16 xl:px-24">
         <header className="flex items-center justify-between">
-          <Logo />
+          <Logo to={`/${locale}/login`} />
 
           <LanguageSwitcher />
         </header>

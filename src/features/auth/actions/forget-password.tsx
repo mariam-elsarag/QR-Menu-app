@@ -1,6 +1,8 @@
 "use server";
 
+import { createHash } from "node:crypto";
 import { SignJWT } from "jose";
+
 import { prisma } from "@/src/lib/prisma";
 import { routing } from "@/src/i18n/routing";
 import { forgetPasswordSchema } from "../schemas/auth.schema";
@@ -32,6 +34,10 @@ export async function forgetPasswordAction(
 
     const user = await prisma.user.findUnique({
       where: { email },
+      select: {
+        id: true,
+        email: true,
+      },
     });
 
     if (!user) {
@@ -54,15 +60,25 @@ export async function forgetPasswordAction(
       .setExpirationTime("15m")
       .sign(new TextEncoder().encode(secret));
 
-    const resetUrl = new URL(`/${locale}/reset-password`, appUrl);
+    const tokenHash = createHash("sha256").update(token).digest("hex");
 
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        forgetPasswordToken: tokenHash,
+        forgetPasswordTokenCreatedAt: new Date(),
+      },
+    });
+
+    const resetUrl = new URL(`/${locale}/reset-password`, appUrl);
     resetUrl.searchParams.set("token", token);
 
-    await sendPasswordResetEmail(email, resetUrl.toString());
+    await sendPasswordResetEmail(user.email, resetUrl.toString());
 
     return { success: true };
   } catch (error) {
     console.error("Forget password failed:", error);
+
     return { success: false, error: "SERVER_ERROR" };
   }
 }

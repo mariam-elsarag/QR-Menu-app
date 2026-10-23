@@ -122,3 +122,8 @@ body {
 }
 .Toastify__progress-bar--success {
 }
+
+.backdrop-filter-4 {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
