@@ -29,6 +29,8 @@ export default async function middleware(request: NextRequest) {
 
   const pathWithoutLocale = pathname.slice(locale.length + 1) || "/";
 
+  const isHomeRoute = pathWithoutLocale === "/";
+
   const isDashboardRoute =
     pathWithoutLocale === "/dashboard" ||
     pathWithoutLocale.startsWith("/dashboard/");
@@ -38,8 +40,8 @@ export default async function middleware(request: NextRequest) {
       pathWithoutLocale === route || pathWithoutLocale.startsWith(`${route}/`),
   );
 
-  // Public routes don't require authentication checks.
-  if (!isDashboardRoute && !isAuthRoute) {
+  // Only check authentication for routes that need it.
+  if (!isHomeRoute && !isDashboardRoute && !isAuthRoute) {
     return response;
   }
 
@@ -53,6 +55,7 @@ export default async function middleware(request: NextRequest) {
       const { payload } = await jwtVerify(
         token,
         new TextEncoder().encode(secret),
+        { algorithms: ["HS256"] },
       );
 
       isAuthenticated = typeof payload.userId === "string";
@@ -61,11 +64,21 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  // Guest trying to access dashboard.
+  // Home route: redirect based on authentication.
+  if (isHomeRoute) {
+    return redirectTo(
+      request,
+      locale,
+      isAuthenticated ? "/dashboard" : "/login",
+    );
+  }
+
+  // Guests cannot access the dashboard.
   if (isDashboardRoute && !isAuthenticated) {
     return redirectTo(request, locale, "/login");
   }
 
+  // Authenticated users shouldn't revisit auth pages.
   if (isAuthRoute && isAuthenticated) {
     return redirectTo(request, locale, "/dashboard");
   }
