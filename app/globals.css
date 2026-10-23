@@ -120,3 +120,5 @@ body {
     @apply font-sans;
   }
 }
+.Toastify__progress-bar--success {
+}

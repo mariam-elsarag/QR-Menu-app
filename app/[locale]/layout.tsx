@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 
 import { routing } from "@/src/i18n/routing";
 import "./../globals.css";
+import ToastProvider from "@/components/share/toast-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -43,7 +44,11 @@ export default async function LocaleLayout({
       className={`${inter.variable}  ${cormorant.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          {children}
+
+          <ToastProvider />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

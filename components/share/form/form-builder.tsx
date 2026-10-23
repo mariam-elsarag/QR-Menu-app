@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   Controller,
   type ControllerRenderProps,
@@ -7,26 +8,26 @@ import {
   type FieldValues,
   useFormContext,
 } from "react-hook-form";
-import { useTranslations } from "next-intl";
 
 import { Label } from "@/components/ui/label";
 import type { FormFieldConfig } from "./types";
 
-import InputField from "./fields/input-field";
-import TextareaField from "./fields/textarea-field";
-import SelectField from "./fields/select-field";
-import SwitchField from "./fields/switch-field";
-import RadioField from "./fields/radio-field";
 import DropdownField from "./fields/dropdown-field";
+import InputField from "./fields/input-field";
+import RadioField from "./fields/radio-field";
+import SwitchField from "./fields/switch-field";
+import TextareaField from "./fields/textarea-field";
 
 type FormBuilderProps<T extends FieldValues> = {
   fields: FormFieldConfig<T>[];
   loading?: boolean;
+  className?: string;
 };
 
 const FormBuilder = <T extends FieldValues>({
   fields,
   loading = false,
+  className,
 }: FormBuilderProps<T>) => {
   const { control } = useFormContext<T>();
   const t = useTranslations();
@@ -102,7 +103,7 @@ const FormBuilder = <T extends FieldValues>({
   };
 
   return (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+    <div className={` ${className ?? "grid grid-cols-1 gap-5 md:grid-cols-2"}`}>
       {fields.map((item) => (
         <Controller
           key={item.name}
@@ -125,7 +126,7 @@ const FormBuilder = <T extends FieldValues>({
                 </div>
               ) : (
                 <>
-                  <Label htmlFor={item.name}>
+                  <Label className="capitalize gap-0" htmlFor={item.name}>
                     {t(item.label)}
                     {item.required && (
                       <span className="ms-1 text-destructive">*</span>

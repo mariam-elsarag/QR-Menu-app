@@ -1,19 +1,16 @@
 "use client";
 
+import { logoutAction } from "@/src/features/auth/actions/logout";
 import {
   BadgePercent,
   ChartNoAxesColumn,
   GitBranch,
-  Home,
   HomeIcon,
   LayoutDashboard,
   LogOut,
-  LogOutIcon,
   Package,
   Settings,
   ShoppingCart,
-  Tags,
-  X,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
@@ -48,7 +45,9 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       ? currentPath === url
       : currentPath === url || currentPath.startsWith(`${url}/`);
 
-  const handleLogout = () => {};
+  const handleLogout = async () => {
+    await logoutAction();
+  };
 
   return (
     <>

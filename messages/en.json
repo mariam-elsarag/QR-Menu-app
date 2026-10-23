@@ -22,23 +22,61 @@
   "LanguageSwitcher": {
     "switchLanguage": "Switch language"
   },
-  "products": {
-    "title": "Products",
-    "create": "Create product",
-    "edit": "Edit product",
-    "name": "Product name",
-    "price": "Price",
-    "description": "Description",
-    "category": "Category",
-    "status": "Status",
-    "isAvailable": "Available",
-    "save": "Save product",
-    "cancel": "Cancel",
-    "selectCategory": "Select a category",
-    "validation": {
-      "nameRequired": "Product name is required",
-      "priceRequired": "Price is required",
-      "categoryRequired": "Please select a category"
+  "auth": {
+    "login": {
+      "language": "EN",
+      "title": "Welcome back!",
+      "description": "Sign in to your restaurant account and manage your digital menu with ease.",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "emailError": "Please enter a valid email.",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "passwordError": "Password is required.",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "signIn": "Sign in",
+      "signingIn": "Signing in...",
+      "secureAccess": "SECURE ACCESS",
+      "securityNote": "Secure access to your restaurant dashboard",
+      "footer": "Made for modern restaurants",
+      "platformLabel": "THE MODERN RESTAURANT PLATFORM",
+      "heroTitle": "Your restaurant, beautifully managed.",
+      "heroDescription": "Create, customize, and manage your digital menu in one powerful workspace.",
+      "previewRestaurant": "Your Restaurant",
+      "previewSubtitle": "Digital Menu Dashboard",
+      "live": "Live",
+      "previewMenu": "Digital Menu",
+      "previewAccess": "Menu Access",
+      "previewReady": "Your menu is ready",
+      "previewReadyDescription": "Customers can scan and explore",
+      "benefitUpdates": "Real-time updates",
+      "benefitMobile": "Mobile friendly",
+      "benefitQR": "QR-powered menus",
+      "validation": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "passwordRequired": "Password is required"
+      },
+      "success": "Signed in successfully"
+    },
+    "forgetPassword": {
+      "title": "Forgot your password?",
+      "description": "Enter the email address associated with your account. If an account exists, we'll send you a link to reset your password.",
+      "submit": "Send reset link",
+      "submitting": "Sending reset link...",
+      "success": "If an account exists for this email, you'll receive a password reset link shortly.",
+      "errors": {
+        "validation": "Please enter a valid email address.",
+        "server": "We couldn't process your request right now. Please try again later."
+      }
     }
-  }
+  },
+  "errors": {
+    "validation": "Please check your input and try again.",
+    "server": "Something went wrong. Please try again."
+  },
+  "invalidCredentials": "Invalid email or password"
 }

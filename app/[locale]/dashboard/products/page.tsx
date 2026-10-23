@@ -1,5 +1,7 @@
-import ProductsList from "@/src/features/products/components/products-list";
+import React from "react";
 
-export default function ProductsPage() {
-  return <ProductsList />;
-}
+const page = () => {
+  return <div>page</div>;
+};
+
+export default page;

@@ -41,7 +41,7 @@ const Logo = () => {
               : "text-[9px] font-medium uppercase tracking-[0.16em] text-muted-foreground"
           }
         >
-          {isArabic ? "للمطاعم" : "Restaurant Studio"}
+          {isArabic ? "للمطاعم" : "Restaurant Platform"}
         </span>
       </span>
     </Link>
