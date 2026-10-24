@@ -1,6 +1,7 @@
 {
   "navigation": {
     "overview": "Overview",
+    "teamManagment": "Team Management",
     "products": "Products",
     "categories": "Categories",
     "branches": "Branches",
@@ -115,5 +116,8 @@
     "passwordChangeConfigurationMissing": "Session configuration is missing.",
     "server": "Something went wrong. Please try again."
   },
-  "invalidCredentials": "Invalid email or password"
+  "invalidCredentials": "Invalid email or password",
+  "filter": "Filter",
+  "applyFilter": " Apply Filters",
+  "noResultsFound": "No results found."
 }

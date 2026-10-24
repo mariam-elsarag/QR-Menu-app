@@ -11,6 +11,7 @@ import {
   Package,
   Settings,
   ShoppingCart,
+  Users,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
@@ -19,6 +20,7 @@ import Logo from "../share/Logo";
 
 const navigation = [
   { title: "overview", url: "/dashboard", icon: HomeIcon },
+  { title: "teamManagment", url: "/dashboard/team", icon: Users },
   { title: "products", url: "/dashboard/products", icon: Package },
   { title: "categories", url: "/dashboard/categories", icon: LayoutDashboard },
   { title: "branches", url: "/dashboard/branches", icon: GitBranch },
