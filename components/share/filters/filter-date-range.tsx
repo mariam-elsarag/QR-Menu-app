@@ -106,7 +106,6 @@ export function FilterDateRange({
             selected={selectedRange}
             onSelect={handleSelect}
             numberOfMonths={1}
-            initialFocus
           />
         </PopoverContent>
       </Popover>

@@ -122,12 +122,19 @@ export function FilterPopover({
         {/* Filter fields */}
         <div className="min-w-0 space-y-4">
           {filters.map((filter) => {
+            const filterValue = draftValues[filter.key];
+
             if (filter.type === "dropdown") {
               return (
                 <FilterDropdown
                   key={filter.key}
                   filter={filter}
-                  value={draftValues[filter.key]}
+                  value={
+                    typeof filterValue === "string" ||
+                    Array.isArray(filterValue)
+                      ? filterValue
+                      : undefined
+                  }
                   onChange={(nextValue) => handleChange(filter.key, nextValue)}
                 />
               );

@@ -61,8 +61,16 @@
         "emailInvalid": "Please enter a valid email address",
         "passwordRequired": "Password is required"
       },
+      "errors": {
+        "server": "Something went wrong. Please try again later."
+      },
       "success": "Signed in successfully"
     },
+    "sessionExpired": "Your session has expired.",
+    "sessionExpiredDescription": "Please log in again to continue.",
+    "accountUnavailable": "Your account is unavailable.",
+    "accountUnavailableDescription": "Your account or organization may have been deactivated. Please contact your administrator.",
+
     "forgetPassword": {
       "title": "Forgot your password?",
       "description": "Enter the email address associated with your account. If an account exists, we'll send you a link to reset your password.",
@@ -119,5 +127,77 @@
   "invalidCredentials": "Invalid email or password",
   "filter": "Filter",
   "applyFilter": " Apply Filters",
-  "noResultsFound": "No results found."
+  "noResultsFound": "No results found.",
+  "addUser": "Add user",
+  "createRole": "Create role",
+  "roleNameIsRequired": "Role name is required",
+  "roleMaxnameCharacter": "Role name must not exceed 180 characters",
+  "rolePermissionIsRequired": "Please select at least one permission",
+  "permissionSelector": {
+    "title": "Permissions",
+    "description": "Choose what this role can access and manage.",
+    "selectedCount": "{count} selected",
+    "access": "Access",
+    "view": "View",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deactivate": "Deactivate",
+    "manage": "Manage",
+    "managePermissions": "Manage permissions",
+    "dashboard": "Dashboard",
+    "dashboardDescription": "Overview and dashboard access",
+    "organization": "Organization",
+    "organizationDescription": "Restaurant profile and information",
+    "settings": "Settings",
+    "settingsDescription": "Manage restaurant preferences",
+    "branches": "Branches",
+    "branchesDescription": "Manage restaurant branches",
+    "categories": "Categories",
+    "categoriesDescription": "Organize menu categories",
+    "products": "Products",
+    "productsDescription": "Manage menu products",
+    "discounts": "Discounts",
+    "discountsDescription": "Manage product discounts",
+    "promotions": "Promotions",
+    "promotionsDescription": "Manage branch product promotions",
+    "teamMembers": "Team members",
+    "teamMembersDescription": "Manage team member accounts",
+    "roles": "Roles & permissions",
+    "rolesDescription": "Manage roles and access rules",
+    "reports": "Reports",
+    "reportsDescription": "View business reports",
+    "other": "Other",
+    "otherDescription": "Manage this resource",
+    "dependencyHint": "Access must be enabled before assigning management actions. Changes apply to members assigned to this role.",
+    "totalSelected": "{selected} of {total} permissions selected",
+    "selectAll": "تحديد جميع صلاحيات {module}"
+  },
+  "roleForm": {
+    "errors": {
+      "roleNameExists": "A role with this name already exists.",
+      "invalidPermissions": "Some selected permissions are invalid.",
+      "validationError": "Please check the form fields.",
+      "createFailed": "Failed to create role. Please try again."
+    },
+    "success": {
+      "created": "Role created successfully.",
+      "updated": "Role updated successfully."
+    }
+  },
+
+  "roleName": "Role Name",
+  "roleNamePlaceholder": "Enter role name",
+  "permissions": "Permissions",
+  "permissionRequired": "Select at least one permission",
+  "back": "Back",
+  "failedToGetRoles": "Failed to load roles. Please try again.",
+  "fullAccess": "Full access",
+  "allPermissionsIncluded": "All permissions included",
+  "permissionCount": "{count} permissions",
+  "noPermissions": "No permissions",
+  "noPermissionsAssigned": "No permissions assigned",
+  "allPermissions": "All permissions ({count})",
+  "more": "+{count} more",
+  "totalItems": "Total: {count} items"
 }

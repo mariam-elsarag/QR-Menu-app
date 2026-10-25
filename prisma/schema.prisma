@@ -91,6 +91,7 @@ model User {
 
   organizationId String
   roleId         String
+  sessionVersion Int @default(0)
 
   organization Organization @relation(fields: [organizationId],references: [id])
   role Role @relation(fields: [roleId, organizationId],references: [id, organizationId])

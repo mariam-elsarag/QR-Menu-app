@@ -3,6 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 
 import { routing } from "./src/i18n/routing";
+import {
+  SESSION_ALGORITHM,
+  SESSION_COOKIE_NAME,
+  getSessionSecret,
+} from "./src/lib/auth/auth-config";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -40,57 +45,76 @@ export default async function middleware(request: NextRequest) {
       pathWithoutLocale === route || pathWithoutLocale.startsWith(`${route}/`),
   );
 
-  // Only check authentication for routes that need it.
   if (!isHomeRoute && !isDashboardRoute && !isAuthRoute) {
     return response;
   }
 
-  const token = request.cookies.get("session")?.value;
-  const secret = process.env.SESSION_SECRET;
+  const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
 
   let isAuthenticated = false;
+  let invalidSession = false;
 
-  if (token && secret) {
+  if (token) {
     try {
-      const { payload } = await jwtVerify(
-        token,
-        new TextEncoder().encode(secret),
-        { algorithms: ["HS256"] },
-      );
+      const { payload } = await jwtVerify(token, getSessionSecret(), {
+        algorithms: [SESSION_ALGORITHM],
+      });
 
-      isAuthenticated = typeof payload.userId === "string";
+      isAuthenticated =
+        typeof payload.sub === "string" &&
+        payload.sub.length > 0 &&
+        typeof payload.sessionVersion === "number" &&
+        Number.isSafeInteger(payload.sessionVersion) &&
+        payload.sessionVersion >= 0;
+
+      invalidSession = !isAuthenticated;
     } catch {
-      isAuthenticated = false;
+      invalidSession = true;
     }
   }
 
-  // Home route: redirect based on authentication.
+  let result: NextResponse;
+
   if (isHomeRoute) {
-    return redirectTo(
+    result = redirectTo(
       request,
       locale,
       isAuthenticated ? "/dashboard" : "/login",
     );
+  } else if (isDashboardRoute && !isAuthenticated) {
+    result = redirectTo(
+      request,
+      locale,
+      "/login",
+      invalidSession ? "session-expired" : undefined,
+    );
+  } else if (isAuthRoute && isAuthenticated) {
+    result = redirectTo(request, locale, "/dashboard");
+  } else {
+    result = response;
   }
 
-  // Guests cannot access the dashboard.
-  if (isDashboardRoute && !isAuthenticated) {
-    return redirectTo(request, locale, "/login");
+  if (invalidSession) {
+    result.cookies.delete(SESSION_COOKIE_NAME);
   }
 
-  // Authenticated users shouldn't revisit auth pages.
-  if (isAuthRoute && isAuthenticated) {
-    return redirectTo(request, locale, "/dashboard");
-  }
-
-  return response;
+  return result;
 }
 
-function redirectTo(request: NextRequest, locale: string, path: string) {
+function redirectTo(
+  request: NextRequest,
+  locale: string,
+  path: string,
+  reason?: string,
+) {
   const url = request.nextUrl.clone();
 
   url.pathname = `/${locale}${path}`;
   url.search = "";
+
+  if (reason) {
+    url.searchParams.set("reason", reason);
+  }
 
   return NextResponse.redirect(url);
 }

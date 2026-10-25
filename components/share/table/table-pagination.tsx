@@ -24,46 +24,46 @@ const TablePagination = ({
   onPageChange,
   isLoading = false,
 }: TablePaginationProps) => {
-  if (totalPages <= 1) return null;
+  const pages = Math.max(1, totalPages);
+  const page = Math.min(Math.max(1, currentPage), pages);
 
-  const changePage = (page: number) => {
-    if (isLoading || page < 1 || page > totalPages || page === currentPage) {
+  const changePage = (nextPage: number) => {
+    if (isLoading || nextPage < 1 || nextPage > pages || nextPage === page) {
       return;
     }
 
-    onPageChange(page);
+    onPageChange(nextPage);
   };
 
-  const visiblePages = Array.from(
-    { length: totalPages },
-    (_, i) => i + 1,
-  ).filter(
-    (page) =>
-      page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1,
+  const visiblePages = Array.from({ length: pages }, (_, i) => i + 1).filter(
+    (item) => item === 1 || item === pages || Math.abs(item - page) <= 1,
   );
 
+  const previousDisabled = isLoading || page === 1;
+  const nextDisabled = isLoading || page === pages;
+
   return (
-    <Pagination className=" w-fit mx-0">
+    <Pagination className="w-fit mx-0">
       <PaginationContent className="flex flex-row items-center justify-center gap-1 whitespace-nowrap">
         <PaginationItem>
           <PaginationPrevious
             href="#"
-            aria-disabled={isLoading || currentPage === 1}
+            aria-disabled={previousDisabled}
             className={
-              isLoading || currentPage === 1
+              previousDisabled
                 ? "pointer-events-none opacity-50"
                 : "cursor-pointer"
             }
             onClick={(e) => {
               e.preventDefault();
-              changePage(currentPage - 1);
+              changePage(page - 1);
             }}
           />
         </PaginationItem>
 
-        {visiblePages.map((page, index) => (
-          <Fragment key={page}>
-            {index > 0 && page - visiblePages[index - 1] > 1 && (
+        {visiblePages.map((item, index) => (
+          <Fragment key={item}>
+            {index > 0 && item - visiblePages[index - 1] > 1 && (
               <PaginationItem>
                 <PaginationEllipsis className="text-muted-ink" />
               </PaginationItem>
@@ -72,7 +72,7 @@ const TablePagination = ({
             <PaginationItem>
               <PaginationLink
                 href="#"
-                isActive={page === currentPage}
+                isActive={item === page}
                 aria-disabled={isLoading}
                 className={
                   isLoading
@@ -81,10 +81,10 @@ const TablePagination = ({
                 }
                 onClick={(e) => {
                   e.preventDefault();
-                  changePage(page);
+                  changePage(item);
                 }}
               >
-                {page}
+                {item}
               </PaginationLink>
             </PaginationItem>
           </Fragment>
@@ -93,15 +93,13 @@ const TablePagination = ({
         <PaginationItem>
           <PaginationNext
             href="#"
-            aria-disabled={isLoading || currentPage === totalPages}
+            aria-disabled={nextDisabled}
             className={
-              isLoading || currentPage === totalPages
-                ? "pointer-events-none opacity-50"
-                : "cursor-pointer"
+              nextDisabled ? "pointer-events-none opacity-50" : "cursor-pointer"
             }
             onClick={(e) => {
               e.preventDefault();
-              changePage(currentPage + 1);
+              changePage(page + 1);
             }}
           />
         </PaginationItem>

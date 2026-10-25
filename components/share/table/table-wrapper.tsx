@@ -12,7 +12,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
@@ -21,18 +20,9 @@ import { MoreHorizontal, Eye, Pencil, Trash2 } from "lucide-react";
 import TablePagination from "./table-pagination";
 import TableLoader from "./table-loader";
 import { useTranslations } from "next-intl";
-
-export type TableColumn<T> = {
-  head: string;
-  field: keyof T;
-};
-
-export type PaginatedResponse<T> = {
-  data: T[];
-  page: number;
-  pages: number;
-  count: number;
-};
+import type { PaginatedResponse, TableColumn } from "./types";
+import type { FilterConfig, FilterValues } from "../filters/types";
+import { FilterPopover } from "../filters/filter-popover";
 
 type TableWrapperProps<T extends { id: string | number }> =
   PaginatedResponse<T> & {
@@ -42,6 +32,9 @@ type TableWrapperProps<T extends { id: string | number }> =
     onView?: (row: T) => void;
     onEdit?: (row: T) => void;
     onDelete?: (row: T) => void;
+    filters?: FilterConfig[];
+    appliedFilters?: FilterValues;
+    handleApplyFilters?: (values: FilterValues) => void;
   };
 
 const TableWrapper = <T extends { id: string | number }>({
@@ -55,122 +48,142 @@ const TableWrapper = <T extends { id: string | number }>({
   onView,
   onEdit,
   onDelete,
+  filters,
+  appliedFilters,
+  handleApplyFilters,
 }: TableWrapperProps<T>) => {
   const hasActions = Boolean(onView || onEdit || onDelete);
   const totalColumns = columns.length + (hasActions ? 1 : 0);
   const t = useTranslations();
+  {
+  }
   return (
     <div className="space-y-4">
-      <div className="overflow-hidden rounded-xl border border-border">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-accent hover:bg-accent">
-              {columns.map((column, idx) => (
-                <TableHead
-                  key={String(column.field)}
-                  className={`py-3 font-semibold text-primary ${
-                    idx === 0 ? "ps-4" : ""
-                  }`}
-                >
-                  {column.head}
-                </TableHead>
-              ))}
+      <div className="rounded-xl border border-border">
+        <header>
+          {filters && handleApplyFilters && (
+            <FilterPopover
+              filters={filters}
+              value={appliedFilters}
+              onApply={handleApplyFilters}
+            />
+          )}
+        </header>
 
-              {hasActions && (
-                <TableHead className="w-[80px] py-3 text-end font-semibold text-primary"></TableHead>
-              )}
-            </TableRow>
-          </TableHeader>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-accent hover:bg-accent">
+                {columns.map((column, idx) => (
+                  <TableHead
+                    key={String(column.field)}
+                    className={`py-3 font-semibold text-primary ${
+                      idx === 0 ? "ps-4 rounded-tl-xl" : ""
+                    } ${columns?.length === idx && !hasActions ? "rounded-tr-xl" : ""}`}
+                  >
+                    {column.head}
+                  </TableHead>
+                ))}
 
-          {isLoading ? (
-            <TableLoader columns={totalColumns} rows={5} />
-          ) : (
-            <TableBody>
-              {data.length > 0 ? (
-                data.map((row) => (
-                  <TableRow key={row.id}>
-                    {columns.map((column) => (
-                      <TableCell
-                        key={String(column.field)}
-                        className="px-4 py-3.5 text-muted-ink"
-                      >
-                        {String(row[column.field] ?? "-")}
-                      </TableCell>
-                    ))}
+                {hasActions && (
+                  <TableHead className="w-[80px] rounded-tr-xl py-3 text-end font-semibold text-primary" />
+                )}
+              </TableRow>
+            </TableHeader>
 
-                    {hasActions && (
-                      <TableCell className="px-4 py-2 text-end">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="size-8"
-                              aria-label="Open row actions"
-                            >
-                              <MoreHorizontal className="size-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
+            {isLoading ? (
+              <TableLoader columns={totalColumns} rows={5} />
+            ) : (
+              <TableBody>
+                {data.length > 0 ? (
+                  data.map((row) => (
+                    <TableRow key={row.id}>
+                      {columns.map((column) => {
+                        const value = row[column.field];
 
-                          <DropdownMenuContent align="end">
-                            {onView && (
-                              <DropdownMenuItem
-                                onClick={() => onView(row)}
-                                className="cursor-pointer"
+                        return (
+                          <TableCell
+                            key={String(column.field)}
+                            className="px-4 py-3.5 text-muted-ink"
+                          >
+                            {column.render
+                              ? column.render(value, row)
+                              : String(value ?? "-")}
+                          </TableCell>
+                        );
+                      })}
+
+                      {hasActions && (
+                        <TableCell className="px-4 py-2 text-end">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="size-8"
+                                aria-label="Open row actions"
                               >
-                                <Eye className="me-2 size-4" />
-                                {t("view")}
-                              </DropdownMenuItem>
-                            )}
+                                <MoreHorizontal className="size-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
 
-                            {onEdit && (
-                              <DropdownMenuItem
-                                onClick={() => onEdit(row)}
-                                className="cursor-pointer"
-                              >
-                                <Pencil className="me-2 size-4" />
-                                {t("edit")}
-                              </DropdownMenuItem>
-                            )}
+                            <DropdownMenuContent align="end">
+                              {onView && (
+                                <DropdownMenuItem
+                                  onClick={() => onView(row)}
+                                  className="cursor-pointer"
+                                >
+                                  <Eye className="me-2 size-4" />
+                                  {t("view")}
+                                </DropdownMenuItem>
+                              )}
 
-                            {onDelete && (
-                              <>
+                              {onEdit && (
+                                <DropdownMenuItem
+                                  onClick={() => onEdit(row)}
+                                  className="cursor-pointer"
+                                >
+                                  <Pencil className="me-2 size-4" />
+                                  {t("edit")}
+                                </DropdownMenuItem>
+                              )}
+
+                              {onDelete && (
                                 <DropdownMenuItem
                                   onClick={() => onDelete(row)}
                                   variant="destructive"
                                   className="cursor-pointer text-destructive focus:text-destructive"
                                 >
-                                  <Trash2 className="me-2 size-4 " />
+                                  <Trash2 className="me-2 size-4" />
                                   {t("delete")}
                                 </DropdownMenuItem>
-                              </>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    )}
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={totalColumns}
+                      className="h-24 text-center text-muted-foreground"
+                    >
+                      No results found.
+                    </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={totalColumns}
-                    className="h-24 text-center text-muted-foreground"
-                  >
-                    No results found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          )}
-        </Table>
+                )}
+              </TableBody>
+            )}
+          </Table>
+        </div>
       </div>
 
       <div className="flex items-center justify-between gap-4">
         <span className="text-nowrap text-sm text-muted-foreground">
-          Total: {count} items
+          {t("totalItems", { count })}
         </span>
-
         <TablePagination
           currentPage={page}
           totalPages={pages}

@@ -1,15 +1,32 @@
+import type { ReactNode } from "react";
+import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
+
+import { requireAuth } from "@/src/lib/auth/require-auth";
 import DashboardWrapper from "@/components/dashboard/dashboard-wrapper";
-import { ReactNode } from "react";
 
-type DashboardLayoutProps = {
+export default async function DashboardLayout({
+  children,
+}: {
   children: ReactNode;
-};
-const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  return (
-    <div>
-      <DashboardWrapper>{children}</DashboardWrapper>
-    </div>
-  );
-};
+}) {
+  const result = await requireAuth();
+  const locale = await getLocale();
 
-export default DashboardLayout;
+  if (!result.success) {
+    if (result.error === "UNAUTHENTICATED") {
+      redirect(`/${locale}/login?reason=session-expired`);
+    }
+
+    if (
+      result.error === "ORGANIZATION_UNAVAILABLE" ||
+      result.error === "INVALID_USER_ROLE"
+    ) {
+      redirect(`/${locale}/403`);
+    }
+
+    throw new Error("Failed to validate the current session");
+  }
+
+  return <DashboardWrapper>{children}</DashboardWrapper>;
+}

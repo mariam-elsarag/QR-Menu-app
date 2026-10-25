@@ -6,6 +6,11 @@ import { compare } from "bcryptjs";
 
 import { loginSchema } from "../schemas/auth.schema";
 import { prisma } from "@/src/lib/prisma";
+import {
+  SESSION_COOKIE_NAME,
+  SESSION_ALGORITHM,
+  getSessionSecret,
+} from "@/src/lib/auth/auth-config";
 
 type LoginResult =
   | { success: true }
@@ -25,38 +30,75 @@ export async function loginAction(values: unknown): Promise<LoginResult> {
     const { email, password, rememberMe } = parsed.data;
 
     const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase().trim() },
+      where: { email: email.trim().toLowerCase() },
+      select: {
+        id: true,
+        email: true,
+        passwordHash: true,
+        isActive: true,
+        organizationId: true,
+        roleId: true,
+        sessionVersion: true,
+      },
     });
 
-    if (!user || !(await compare(password, user.passwordHash))) {
+    if (
+      !user ||
+      !user.isActive ||
+      !(await compare(password, user.passwordHash))
+    ) {
       return { success: false, error: "INVALID_CREDENTIALS" };
     }
 
-    const secret = process.env.SESSION_SECRET;
-
-    if (!secret) {
-      throw new Error("SESSION_SECRET is not configured");
+    if (!user.organizationId || !user.roleId) {
+      return { success: false, error: "INVALID_CREDENTIALS" };
     }
 
-    const key = new TextEncoder().encode(secret);
+    const organization = await prisma.organization.findUnique({
+      where: { id: user.organizationId },
+      select: { deletedAt: true },
+    });
+
+    if (!organization || organization.deletedAt) {
+      return { success: false, error: "INVALID_CREDENTIALS" };
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        sessionVersion: { increment: 1 },
+      },
+      select: {
+        id: true,
+        organizationId: true,
+        sessionVersion: true,
+      },
+    });
+
+    const maxAge = rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24;
 
     const token = await new SignJWT({
-      userId: user.id,
+      sessionVersion: updatedUser.sessionVersion,
     })
-      .setProtectedHeader({ alg: "HS256" })
+      .setProtectedHeader({ alg: SESSION_ALGORITHM })
+      .setSubject(updatedUser.id)
       .setIssuedAt()
       .setExpirationTime(rememberMe ? "30d" : "1d")
-      .sign(key);
+      .sign(getSessionSecret());
 
     const cookieStore = await cookies();
 
-    cookieStore.set("session", token, {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "lax" as const,
       path: "/",
-      maxAge: rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24,
-    });
+      maxAge,
+    };
+
+    cookieStore.set(SESSION_COOKIE_NAME, token, cookieOptions);
+
+    cookieStore.set("organization", updatedUser.organizationId, cookieOptions);
 
     return { success: true };
   } catch (error) {
