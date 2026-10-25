@@ -4,6 +4,7 @@ import { AuthError } from "@/src/lib/auth/auth-error";
 import { authorize } from "@/src/lib/auth/authorize";
 import { prisma } from "@/src/lib/prisma";
 import { GetRolesParams, GetRolesResult } from "../type/types";
+import { RoleType } from "@/app/generated/prisma/enums";
 
 export async function getRoles({
   page = 1,
@@ -32,6 +33,9 @@ export async function getRoles({
     const searchTerm = search.trim();
     const where = {
       organizationId: auth.organizationId,
+      type: {
+        not: RoleType.OWNER,
+      },
       ...(searchTerm && {
         name: {
           contains: searchTerm,

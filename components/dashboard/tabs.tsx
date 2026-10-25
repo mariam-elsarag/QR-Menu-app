@@ -57,7 +57,7 @@ export default function PageTabs({
             aria-pressed={isActive}
             onClick={() => handleTabChange(tab.value)}
             className={cn(
-              "flex min-w-0 w-full items-center gap-3 rounded-xl",
+              "flex min-w-0 w-full items-center gap-3 cursor-pointer rounded-xl",
               "border p-3 text-start sm:p-4",
               "transition-colors duration-200",
               "focus-visible:outline-none focus-visible:ring-2",

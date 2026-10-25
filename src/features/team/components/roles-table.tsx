@@ -58,6 +58,7 @@ export default function RolesTable({ response }: RolesTableProps) {
       <ConfirmationModal
         open={visible?.visible}
         onOpenChange={(open) => {
+          setVisible({ visible: false, value: "" });
           console.log("kkk");
         }}
         onConfirm={() => {

@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Loader2, Trash2 } from "lucide-react";
+import type { MouseEvent } from "react";
 
 import {
   AlertDialog,
@@ -39,7 +40,7 @@ const ConfirmationModal = ({
 }: ConfirmationModalProps) => {
   const t = useTranslations();
 
-  const handleConfirm = async (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleConfirm = async (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     await onConfirm();
   };
@@ -53,16 +54,16 @@ const ConfirmationModal = ({
       }}
     >
       <AlertDialogContent>
-        <AlertDialogHeader className="">
-          <div className="mb-2 flex size-12 items-center mx-auto justify-center rounded-full bg-destructive/10">
+        <AlertDialogHeader>
+          <div className="mx-auto mb-2 flex size-12 items-center justify-center rounded-full bg-destructive/10">
             <Trash2 className="size-5 text-destructive" />
           </div>
 
-          <AlertDialogTitle className="text-center w-full">
+          <AlertDialogTitle className="w-full text-center">
             {title ?? t("deleteTitle")}
           </AlertDialogTitle>
 
-          <AlertDialogDescription className="text-center w-full">
+          <AlertDialogDescription className="w-full text-center">
             {description ??
               (itemName
                 ? t("deleteDescription", { itemName })

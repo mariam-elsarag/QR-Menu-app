@@ -199,5 +199,7 @@
   "noPermissionsAssigned": "No permissions assigned",
   "allPermissions": "All permissions ({count})",
   "more": "+{count} more",
-  "totalItems": "Total: {count} items"
+  "totalItems": "Total: {count} items",
+  "deleteRole": "Delete Role",
+  "deleteRoleMessage": "Are you sure you want to delete this role? This action cannot be undone."
 }

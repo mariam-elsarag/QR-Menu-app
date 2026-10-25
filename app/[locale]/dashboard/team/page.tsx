@@ -35,7 +35,9 @@ async function TeamContent({ searchParams, params }: TeamPageProps) {
       return (
         <>
           <TeamErrorToast message="failedToGetRoles" />
-          <TeamManagmentLayout data={[]} />
+          <TeamManagmentLayout
+            data={{ success: true, data: [], page: 0, pages: 0, count: 0 }}
+          />
         </>
       );
     }
@@ -43,8 +45,12 @@ async function TeamContent({ searchParams, params }: TeamPageProps) {
     return <TeamManagmentLayout data={result} />;
   }
 
-  // Temporary state until getUsers() is implemented.
-  return <TeamManagmentLayout data={[]} />;
+  // get user()
+  return (
+    <TeamManagmentLayout
+      data={{ success: true, data: [], page: 0, pages: 0, count: 0 }}
+    />
+  );
 }
 
 export default function TeamPage({ searchParams, params }: TeamPageProps) {
