@@ -27,3 +27,8 @@ export type GetRolesResult =
       success: false;
       error: "UNAUTHORIZED" | "PERMISSION_DENIED" | "SERVER_ERROR";
     };
+
+export type RoleItemType = {
+  id: string;
+  name: string;
+};

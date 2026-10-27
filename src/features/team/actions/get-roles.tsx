@@ -103,3 +103,54 @@ export async function getRoles({
     };
   }
 }
+
+export async function getRolesDropdownList() {
+  try {
+    const auth = await authorize({
+      permissions: ["role_view"],
+    });
+
+    if (!auth.success) {
+      return {
+        success: false as const,
+        error:
+          auth.error === "UNAUTHENTICATED"
+            ? ("UNAUTHORIZED" as const)
+            : ("SERVER_ERROR" as const),
+      };
+    }
+
+    const roles = await prisma.role.findMany({
+      where: {
+        organizationId: auth.organizationId,
+        type: {
+          not: RoleType.OWNER,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+      orderBy: [{ name: "asc" }, { id: "asc" }],
+    });
+
+    return {
+      success: true as const,
+      data: roles,
+    };
+  } catch (error: unknown) {
+    if (error instanceof AuthError && error.message === "PERMISSION_DENIED") {
+      return {
+        success: false as const,
+        error: "PERMISSION_DENIED" as const,
+      };
+    }
+
+    console.error("Failed to get roles dropdown list:", error);
+
+    return {
+      success: false as const,
+      error: "SERVER_ERROR" as const,
+    };
+  }
+}

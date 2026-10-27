@@ -1,5 +1,6 @@
 "use client";
 
+import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { cn } from "@/lib/utils";
@@ -10,6 +11,8 @@ type PageTabsProps = {
   queryKey?: string;
   defaultValue?: string;
   className?: string;
+  onTabChange?: (value: string) => void;
+  onPendingChange?: (isPending: boolean) => void;
 };
 
 export default function PageTabs({
@@ -17,34 +20,41 @@ export default function PageTabs({
   queryKey = "page",
   defaultValue,
   className,
+  onTabChange,
+  onPendingChange,
 }: PageTabsProps) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   const activeValue =
     searchParams.get(queryKey) ?? defaultValue ?? tabs[0]?.value;
 
   function handleTabChange(value: string) {
+    if (value === activeValue) return;
+
     const params = new URLSearchParams(searchParams.toString());
     params.set(queryKey, value);
 
-    router.push(`${pathname}?${params.toString()}`, {
-      scroll: false,
+    onTabChange?.(value);
+
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`, {
+        scroll: false,
+      });
     });
   }
 
   return (
     <nav
       aria-label="Page navigation"
+      aria-busy={isPending}
       className={cn(
         "grid w-full min-w-0 grid-cols-1 gap-3",
         "sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2",
         className,
       )}
-      style={{
-        gridTemplateColumns: undefined,
-      }}
     >
       {tabs.map((tab) => {
         const isActive = activeValue === tab.value;
@@ -55,6 +65,7 @@ export default function PageTabs({
             key={tab.value}
             type="button"
             aria-pressed={isActive}
+            disabled={isPending}
             onClick={() => handleTabChange(tab.value)}
             className={cn(
               "flex min-w-0 w-full items-center gap-3 cursor-pointer rounded-xl",
@@ -62,6 +73,7 @@ export default function PageTabs({
               "transition-colors duration-200",
               "focus-visible:outline-none focus-visible:ring-2",
               "focus-visible:ring-ring focus-visible:ring-offset-2",
+              isPending && "cursor-wait opacity-70",
               isActive
                 ? "border-primary/25 bg-primary/[0.06] shadow-sm"
                 : "border-border bg-card hover:border-primary/20",

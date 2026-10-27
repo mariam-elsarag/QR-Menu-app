@@ -8,10 +8,11 @@ import { useState } from "react";
 import ConfirmationModal from "@/components/share/model/confirmation-modal";
 
 type RolesTableProps = {
+  loading: boolean;
   response: Extract<GetRolesResult, { success: true }>;
 };
 
-export default function RolesTable({ response }: RolesTableProps) {
+export default function RolesTable({ response, loading }: RolesTableProps) {
   const { data, page, pages, count } = response;
   const [visible, setVisible] = useState<{
     visible: boolean;
@@ -44,6 +45,7 @@ export default function RolesTable({ response }: RolesTableProps) {
         page={page}
         pages={pages}
         count={count}
+        isLoading={loading}
         onPageChange={(nextPage) => {
           console.log("Fetch page:", nextPage);
         }}

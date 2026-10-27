@@ -88,3 +88,4 @@ export const changePasswordSchema = z
     message: "auth.resetPassword.validation.passwordsDoNotMatch",
     path: ["confirmPassword"],
   });
+export const acceptInvitationSchema = resetPasswordSchema;

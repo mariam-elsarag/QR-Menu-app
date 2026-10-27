@@ -131,13 +131,13 @@ const RoleForm = ({
   const isSubmitting = form.formState.isSubmitting;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-10">
       <PageBreadcrumbs items={breadcrumbs} />
 
       <FormProvider {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="flex flex-col gap-6"
+          className="flex flex-col gap-10"
         >
           <FormBuilder<RoleFormValues>
             fields={fields}

@@ -194,7 +194,7 @@ export const PERMISSION_GROUPS = {
 //       passwordHash,
 //       organizationId: organization.id,
 //       roleId: ownerRole.id,
-//       isActive: true,
+//       status: UserStatus.ACTIVE,
 //     },
 //   });
 

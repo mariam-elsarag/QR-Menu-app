@@ -78,14 +78,19 @@ model OrganizationSettings {
 }
 
 
-
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
 
 model User {
   id                       String   @id @default(cuid())
+  fullName                 String   @default("")
   phone                    String   @unique
   email                    String   @unique
-  isActive                 Boolean  @default(true)
-  passwordHash             String
+  status                   UserStatus @default(PENDING)
+  passwordHash             String?
   forgetPasswordToken      String?  @unique
   forgetPasswordTokenCreatedAt DateTime?
 
@@ -95,6 +100,23 @@ model User {
 
   organization Organization @relation(fields: [organizationId],references: [id])
   role Role @relation(fields: [roleId, organizationId],references: [id, organizationId])
+ invitations UserInvitation[]
+   createdAt DateTime  @default(now())
+
+}
+
+model UserInvitation {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum RoleType {

@@ -20,7 +20,7 @@ export type FieldOption = {
 export type FormFieldConfig<T extends FieldValues> =
   | (BaseField<T> & {
       type: "input";
-      inputType?: "text" | "email" | "password" | "number";
+      inputType?: "text" | "email" | "password" | "number" | "tel";
       icon?: ComponentType<{ className?: string }>;
     })
   | (BaseField<T> & {

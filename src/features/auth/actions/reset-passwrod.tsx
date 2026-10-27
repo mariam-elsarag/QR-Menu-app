@@ -25,7 +25,7 @@ type PasswordActionResult =
 
 const RESET_TOKEN_EXPIRY_MS = 15 * 60 * 1000;
 
-export async function changePasswordAction(
+export async function resetPasswordAction(
   values: unknown,
   token: string | null,
   type: "change" | "reset",

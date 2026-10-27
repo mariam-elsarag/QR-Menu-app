@@ -10,6 +10,7 @@ import {
   SESSION_COOKIE_NAME,
   getSessionSecret,
 } from "./auth-config";
+import { UserStatus } from "@/app/generated/prisma/enums";
 
 type AuthenticatedUser = {
   id: string;
@@ -70,7 +71,7 @@ export const requireAuth = cache(
         select: {
           id: true,
           email: true,
-          isActive: true,
+          status: true,
           sessionVersion: true,
           organizationId: true,
           roleId: true,
@@ -88,7 +89,7 @@ export const requireAuth = cache(
         },
       });
 
-      if (!user || !user.isActive) {
+      if (!user || user.status !== UserStatus.ACTIVE) {
         return { success: false, error: "UNAUTHENTICATED" };
       }
 
@@ -117,7 +118,8 @@ export const requireAuth = cache(
           roleType: user.role.type,
         },
       };
-    } catch {
+    } catch (err) {
+      console.log("authorization failed", err);
       return { success: false, error: "SERVER_ERROR" };
     }
   },

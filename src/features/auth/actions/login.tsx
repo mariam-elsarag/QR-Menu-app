@@ -11,6 +11,7 @@ import {
   SESSION_ALGORITHM,
   getSessionSecret,
 } from "@/src/lib/auth/auth-config";
+import { UserStatus } from "@/app/generated/prisma/enums";
 
 type LoginResult =
   | { success: true }
@@ -35,16 +36,18 @@ export async function loginAction(values: unknown): Promise<LoginResult> {
         id: true,
         email: true,
         passwordHash: true,
-        isActive: true,
+        status: true,
         organizationId: true,
         roleId: true,
         sessionVersion: true,
       },
     });
-
+    if (!user?.passwordHash) {
+      return { success: false, error: "INVALID_CREDENTIALS" };
+    }
     if (
       !user ||
-      !user.isActive ||
+      user.status !== UserStatus.ACTIVE ||
       !(await compare(password, user.passwordHash))
     ) {
       return { success: false, error: "INVALID_CREDENTIALS" };

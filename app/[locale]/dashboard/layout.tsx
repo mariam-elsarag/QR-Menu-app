@@ -24,8 +24,8 @@ export default async function DashboardLayout({
     ) {
       redirect(`/${locale}/403`);
     }
-
-    throw new Error("Failed to validate the current session");
+    console.log(result.error, "failed");
+    // throw new Error("Failed to validate the current session");
   }
 
   return <DashboardWrapper>{children}</DashboardWrapper>;
